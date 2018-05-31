@@ -120,12 +120,12 @@ open class PasscodeLockViewController: UIViewController, PasscodeLockTypeDelegat
         notificationCenter?.removeObserver(self, name: NSNotification.Name.UIApplicationDidEnterBackground, object: nil)
     }
     
-    open func appWillEnterForegroundHandler(_ notification: Notification) {
+    @objc open func appWillEnterForegroundHandler(_ notification: Notification) {
         
         authenticateWithBiometrics()
     }
     
-    open func appDidEnterBackgroundHandler(_ notification: Notification) {
+    @objc open func appDidEnterBackgroundHandler(_ notification: Notification) {
         
         shouldTryToAuthenticateWithBiometrics = false
     }
@@ -166,13 +166,11 @@ open class PasscodeLockViewController: UIViewController, PasscodeLockTypeDelegat
         
         // if presented as modal
         if presentingViewController?.presentedViewController == self {
-            
-            dismiss(animated: animateOnDismiss, completion: { [weak self] _ in
-                
-                self?.dismissCompletionCallback?()
-                
+            dismiss(animated: animateOnDismiss) {
+                self.dismissCompletionCallback?()
+
                 completionHandler?()
-            })
+            }
             
             return
             
@@ -238,9 +236,9 @@ open class PasscodeLockViewController: UIViewController, PasscodeLockTypeDelegat
         
         deleteSignButton?.isEnabled = true
         animatePlaceholders(placeholders, toState: .inactive)
-        dismissPasscodeLock(lock, completionHandler: { [weak self] _ in
-            self?.successCallback?(lock)
-        })
+        dismissPasscodeLock(lock) {
+            self.successCallback?(lock)
+        }
     }
     
     open func passcodeLockDidFail(_ lock: PasscodeLockType) {
